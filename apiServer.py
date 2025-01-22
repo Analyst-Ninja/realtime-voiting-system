@@ -2,7 +2,8 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 import uvicorn
 from confluent_kafka import Producer
-import json
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
 
 producer_configs = {
     'bootstrap.servers' : 'localhost:9092',
@@ -32,19 +33,20 @@ topic = 'voteTopic'
 
 app = FastAPI()
 
-@app.get("/")
-def read_root():
-    return {"message": "Welcome to my FastAPI server!"}
+# Thread pool for background tasks
+executor = ThreadPoolExecutor()
 
 # Define a Pydantic model for the request body
 class Item(BaseModel):
     name: str
 
 @app.post("/sendToKafka/")
-async def send_vote(item : Item):
-    print(f"Candidate : {item.name}")
+async def send_vote(item: Item):
+    print(f"Candidate: {item.name}")
     try:
-        sendVote(item.name)
+        # Run the sendVote function in a separate thread
+        loop = asyncio.get_event_loop()
+        await loop.run_in_executor(executor, sendVote, item.name)
         return f"Vote registered successfully for {item.name}"
     except Exception as e:
         return str(e)

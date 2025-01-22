@@ -1,15 +1,11 @@
 import time, random
-from locust import HttpUser, between, task
+from locust import HttpUser, between, task, FastHttpUser
 
-class WebSiteUser(HttpUser):
+class WebSiteUser(FastHttpUser):
     wait_time = between(1,2)
 
     @task
-    def home_page(self):
-        self.client.get('/')
-
-    @task
-    def sendVote(self):
+    def send_vote(self):
 
         self.client.post(
             'sendToKafka',
