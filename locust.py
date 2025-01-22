@@ -15,3 +15,5 @@ class WebSiteUser(HttpUser):
             'sendToKafka',
             json={"name" : random.choice(["A","B","C"])}
             )
+        
+
