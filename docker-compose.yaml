@@ -4,7 +4,12 @@ x-spark-common: &spark-common
   image: bitnami/spark:3.5.0
   volumes:
     - ./jobs:/opt/bitnami/spark/jobs
-  command: bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
+    - ./requirements.txt:/tmp/requirements.txt
+  user: root
+  command: > 
+    sh -c "pip install --no-cache-dir -r /tmp/requirements.txt &&
+          bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077"
+
   depends_on:
     - spark-master
   environment:
@@ -16,6 +21,24 @@ x-spark-common: &spark-common
     - votingSystem
 
 services:
+  app-server:
+    image: python:3.11
+    volumes:
+      - ./apiServer.py:/app/apiServer.py
+      - ./requirements.txt:/tmp/requirements.txt
+    user: root
+    command: > 
+      sh -c "pip install --no-cache-dir -r /tmp/requirements.txt && python3 /app/apiServer.py"
+    container_name: app-server
+    ports:
+      - "8000:8000"
+    depends_on:
+      - zookeeper
+      - broker
+    environment:
+      BOOTSTRAP_SERVERS: 'localhost:9092'
+    networks:
+        - votingSystem
   zookeeper:
     image: confluentinc/cp-zookeeper:7.4.0
     hostname: zookeeper

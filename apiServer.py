@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI
 from pydantic import BaseModel
 import uvicorn
@@ -6,9 +7,8 @@ import asyncio
 from concurrent.futures import ThreadPoolExecutor
 
 producer_configs = {
-    'bootstrap.servers' : 'localhost:9092',
-    "client.id": "fastapi-producer",
-    "enable.idempotence": True    
+    'bootstrap.servers' : 'broker:29092',
+    "client.id": "fastapi-producer"  
 }
 
 producer = Producer(producer_configs)
@@ -40,6 +40,12 @@ executor = ThreadPoolExecutor()
 class Item(BaseModel):
     name: str
 
+@app.get("/")
+def home_page():
+    return {
+        "message" : "Server Working"
+    } 
+
 @app.post("/sendToKafka/")
 async def send_vote(item: Item):
     print(f"Candidate: {item.name}")
@@ -53,4 +59,4 @@ async def send_vote(item: Item):
     
 if __name__ == "__main__":
     # Run the app on a custom port (e.g., 8080)
-    uvicorn.run("apiServer:app", host="127.0.0.1", port=8000, reload=True)
+    uvicorn.run("apiServer:app", host="0.0.0.0", port=8000)
