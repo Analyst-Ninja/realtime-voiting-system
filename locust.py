@@ -1,5 +1,5 @@
-import time, random
-from locust import HttpUser, between, task, FastHttpUser
+import random
+from locust import between, task, FastHttpUser
 
 class WebSiteUser(FastHttpUser):
     wait_time = between(1,2)
