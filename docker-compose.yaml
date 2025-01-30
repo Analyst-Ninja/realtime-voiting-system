@@ -97,9 +97,12 @@ services:
 
   spark-master:
     image: bitnami/spark:3.5.0
+    container_name: spark-master
     volumes:
       - ./jobs:/opt/bitnami/spark/jobs
-    command: bin/spark-class org.apache.spark.deploy.master.Master
+      - ./requirements.txt:/tmp/requirements.txt
+    command: >
+      sh -c "pip install --no-cache-dir -r /tmp/requirements.txt && bin/spark-class org.apache.spark.deploy.master.Master"
     ports:
       - "9090:8080"
       - "7077:7077"
@@ -115,6 +118,4 @@ networks:
   votingSystem:
     
 
-    
 
-    
