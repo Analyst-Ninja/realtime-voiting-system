@@ -6,6 +6,7 @@ import asyncio
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 import uuid
+import json
 
 producer_configs = {
     'bootstrap.servers' : 'broker:29092',
@@ -14,17 +15,14 @@ producer_configs = {
 
 producer = Producer(producer_configs)
 
-
 def sendVote(candidate : str):
     producer.produce(
         topic,
-        value= str(
-            {
+        value= json.dumps({
             "id" : str(uuid.uuid4()),
             "candidate" : candidate,
-            "timestamp" : datetime.now()
-             }
-        ),
+            "timestamp" : datetime.now().isoformat()
+             }).encode('utf-8'),
         callback = delivery_report
     )
 
@@ -34,7 +32,7 @@ def delivery_report(err, msg):
     if err is not None:
         print(f"Delivery Failed : {err.decode('utf-8')}")
     else:
-        print(f"Message delivered to {msg.topic()} and {msg.value().decode('utf-8')} candidate")
+        print(f"Message delivered to {msg.topic()} and data : {msg.value().decode('utf-8')} candidate")
 
 topic = 'voteTopic'
 

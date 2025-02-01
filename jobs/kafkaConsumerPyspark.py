@@ -102,11 +102,12 @@ def main():
     # Step 5: Writing the data to AWS S3
     query = write_vote_data(
         vote_stream, 
-        f"s3a://{os.getenv('S3_BUCKET_NAME')}/checkpoints/vote_data",
         f"s3a://{os.getenv('S3_BUCKET_NAME')}/data/vote_data" 
+        f"s3a://{os.getenv('S3_BUCKET_NAME')}/checkpoints/vote_data",
     )
 
     query.awaitTermination()
+    spark.stop()
 
 if __name__ == "__main__":
     main()
