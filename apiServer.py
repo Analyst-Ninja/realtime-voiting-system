@@ -1,10 +1,11 @@
-import os
 from fastapi import FastAPI
 from pydantic import BaseModel
 import uvicorn
 from confluent_kafka import Producer
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime
+import uuid
 
 producer_configs = {
     'bootstrap.servers' : 'broker:29092',
@@ -17,7 +18,13 @@ producer = Producer(producer_configs)
 def sendVote(candidate : str):
     producer.produce(
         topic,
-        value=str(candidate),
+        value= str(
+            {
+            "id" : str(uuid.uuid4()),
+            "candidate" : candidate,
+            "timestamp" : datetime.now()
+             }
+        ),
         callback = delivery_report
     )
 

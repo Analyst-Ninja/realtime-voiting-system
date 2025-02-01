@@ -36,7 +36,7 @@ services:
       - zookeeper
       - broker
     environment:
-      BOOTSTRAP_SERVERS: 'localhost:9092'
+      BOOTSTRAP_SERVERS: "localhost:9092"
     networks:
         - votingSystem
   zookeeper:
@@ -98,6 +98,7 @@ services:
   spark-master:
     image: bitnami/spark:3.5.0
     container_name: spark-master
+    user: root
     volumes:
       - ./jobs:/opt/bitnami/spark/jobs
       - ./requirements.txt:/tmp/requirements.txt

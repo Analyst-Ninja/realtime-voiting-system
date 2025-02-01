@@ -2,3 +2,4 @@ fastapi
 uvicorn
 confluent_kafka
 pandas
+python-dotenv
