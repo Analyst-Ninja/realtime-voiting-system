@@ -3,10 +3,11 @@ import streamlit as st
 import pandas as pd
 import time
 from pyspark.sql import SparkSession
-from pyspark.sql.types import StructType, StructField, StringType, TimestampType, IntegerType
 from pyspark.sql import DataFrame
 from dotenv import load_dotenv
 from pyspark.sql import functions as F
+import plotly.express as px
+import uuid
 
 def main():
     load_dotenv()
@@ -39,6 +40,7 @@ def main():
 
     while True:
         df = load_data(spark=spark)
+        print(df)
         
         if not df.empty:
             with placeholder.container():
@@ -47,6 +49,10 @@ def main():
 
                 st.subheader("Live Value Plot")
                 # st.line_chart(data=df, x='id', y='value')
+                # st.bar_chart(data=df, x=df['candidate'], y=df['id'])
+                fig = px.pie(df, values='count', names='candidate', title='VoteShare')
+                st.plotly_chart(fig, key=str(uuid.uuid4()))
+
 
         time.sleep(10)  # Refresh every 10 seconds
 

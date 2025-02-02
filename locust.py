@@ -9,7 +9,7 @@ class WebSiteUser(FastHttpUser):
 
         self.client.post(
             'sendToKafka',
-            json={"name" : random.choice(["A","B","C"])}
+            json={"name" : random.choice(["Modi","Obama","Trump"])}
             )
         
 
